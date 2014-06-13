@@ -4,6 +4,7 @@ Adapted from wxPython website at http://wiki.wxpython.org/ModelViewController/.
 :copyright: Copyright since 2006 by Oliver Schoenborn, all rights reserved.
 :license: BSD, see LICENSE.txt for details.
 """
+# small change
 
 import wx
 
