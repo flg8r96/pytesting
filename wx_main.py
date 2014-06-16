@@ -29,10 +29,14 @@ class Model:
   def __init__(self):
     self.timerValue = 0
 
+
   def startTimer(self, amount):
     self.timerValue = amount
     #now tell anyone who cares that the value has been changed
     pub.sendMessage("timer_changed", money=self.timerValue)
+    self.controller = Controller()
+    self.controller.changeTimerView(self.timerValue)
+
 
   def stopTimer(self, value):
     self.timerValue = value
