@@ -32,3 +32,4 @@ class View(wx.Frame):
     self.moneyCtrl.SetValue(str(money))
 
 
+
