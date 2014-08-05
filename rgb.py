@@ -5,6 +5,8 @@ __author__ = 'flg8r96'
 from PIL import Image
 import numpy
 import glob, os
+# documentation for PIL:
+# http://effbot.org/imagingbook/image.htm
 
 #file = "/Users/flg8r96/love.jpg"
 #new_file = "/Users/flg8r96/love_gray.jpg"
@@ -14,10 +16,23 @@ import glob, os
 #new_file = "/Users/flg8r96/bar_gray.jpg"
 #lined_file = "/Users/flg8r96/bar_gray_lines.jpg"
 
+file = "/Users/mperkins/awarepoint_logo.jpg"
+new_file = "/Users/mperkins/awarepoint_logo_gray.jpg"
+lined_file = "/Users/mperkins/awarepoint_logo_gray_lines.jpg"
+
+#file = "/Users/mperkins/checker_large.gif"
+#new_file = "/Users/mperkins/checker_large_gray.gif"
+#lined_file = "/Users/mperkins/checker_large_gray_lines.gif"
+
+#file = "/Users/mperkins/flame.jpg"
+#new_file = "/Users/mperkins/flame_gray.jpg"
+#lined_file = "/Users/mperkins/flame_gray_lines.jpg"
+
 im = Image.open(file)
 width, height = im.size
 
-grayscale = im.convert("L")
+grayscale = im.convert("L")     #grayscale
+#grayscale = im.convert("1")     #black and white
 print grayscale
 #msg = grayscale.save("/Users/flg8r96/love_gray.jpg")
 msg = grayscale.save(new_file)
@@ -25,48 +40,64 @@ print "Error in writing file: " +str(msg)
 gwidth, gheight = grayscale.size
 print "Grayscale size: " + str(gwidth) +"x" +str(gheight)
 
-row_deviations = 10
-col_deviations = 10
+row_deviations = 24
+col_deviations = 24
 
 col_cnt = 0
 row_cnt = 0
 
 # create an array of summed pixel values
 # initialize the array
-light = [0 for x in xrange(0, col_deviations)] # col in array
-sumlight = [light for x in xrange(0, row_deviations)] # row in array
+#light = [0 for x in xrange(0, col_deviations)] # col in array
+#sumlight = [light for x in xrange(0, row_deviations)] # row in array
+sumlight = [[0]*col_deviations for x in range(row_deviations)] # row in array
 
 
 
 # search accross and then down for the grid line indexes
-for row in range(1,gheight):
-  for col in range(1,gwidth):
+for row in xrange(0, gheight):
+    col_cnt = 0;
 
-    # get current color value and add it to the sumlight for the grid that this pixel is in
-    pixelrssi = grayscale.getpixel((col,row))
-    #print "pixel for row/col: " +str(row) +"/" +str(col) +"-" +str(pixelrssi) +" col/row_cnt:" +str(col_cnt) +"/" +str(row_cnt)
+    for col in xrange(0, gwidth):
 
-    sumlight[row_cnt][col_cnt] += pixelrssi
+        # get current color value and add it to the sumlight for the grid that this pixel is in
+        pixelrssi = grayscale.getpixel((col, row))
 
-    if row%(gheight/row_deviations) == 0:
-      #print "row/col: " +str(row) +"/" +str(col)
-      # increment row_cnt
-      if col == 1:
-          col_cnt += 1
-      grayscale.putpixel((col,row), 0) # black horizontal line
-
-    else:
-      #print "Not a mod! row/col: " + str(row) +"/" +str(col)
-      #print "col mod gwidth/9 = " +str(col%(gwidth/9)) +" because col:" +str(col) +" gwidth:" +str(gwidth)
-      if col%(gwidth/row_deviations) == 0:
-        #print "Changing a col pixel"
-        grayscale.putpixel((col,row), 0) # black vertical line
-        # increment col_cnt
-        if row == 1:
+        # not sure this does a damn thing
+        if col_cnt == 0 and row%(gheight/row_deviations) != 0 and col == gwidth-1:
             row_cnt += 1
 
-  # increment row_cnt
-  #row_cnt += 1
+        #print "pixel for col/row: "  +str(col) +"/" +str(row) +"-" +str(pixelrssi) +" col_cnt/row_cnt:"  +str(col_cnt) +"/" +str(row_cnt)
+        if pixelrssi > 250:
+            # add nothing if white
+            a = float(0)
+        else:
+            # add 1 if black
+            a = float(1)
+            # row and col are flipped when referencing the array
+            sumlight[row_cnt][col_cnt] += a
+
+
+        #sumlight[col_cnt][row_cnt] += pixelrssi/float(255)
+        #sumlight[col_cnt][row_cnt] += a
+
+        # draw horizontal line on the image to see where the larger pixels are located
+        if row%(gheight/row_deviations) == 0:
+            #print "row/col: " +str(row) +"/" +str(col)
+            grayscale.putpixel((col, row), 0) # black horizontal line
+            # increment row_cnt but don't do it after the first real pixel row
+            if col == 0 and row != 0:
+                row_cnt += 1
+
+
+
+        if col%(gwidth/row_deviations) == 0:
+            #print "Changing a col pixel"
+            grayscale.putpixel((col, row), 0) # black vertical line
+            # increment col_cnt
+            if col != 0:
+                col_cnt += 1
+
 
 
 #msg = grayscale.save("/Users/flg8r96/love_gray_lines.jpg")
@@ -76,9 +107,9 @@ print "row_cnt/col_cnt:" +str(row_cnt) +"/" +str(col_cnt)
 print sumlight
 
 #determine how many pixels are in each square
-row_pixels = gheight/row_deviations
-col_pixels = gwidth/col_deviations
+row_pixels = gheight/float(row_deviations)
+col_pixels = gwidth/float(col_deviations)
 pixels_per_square = row_pixels * col_pixels
 #norm_sumlight = [ x/10 for x in sumlight]
-norm_sumlight = numpy.divide(sumlight,pixels_per_square*255)
-print norm_sumlight
+norm_sumlight = numpy.divide(sumlight,pixels_per_square)
+print numpy.around(norm_sumlight, decimals=3)
