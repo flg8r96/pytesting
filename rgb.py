@@ -9,18 +9,19 @@ import glob, os
 # documentation for PIL:
 # http://effbot.org/imagingbook/image.htm
 
-#file = "/Users/flg8r96/love.jpg"
-#new_file = "/Users/flg8r96/love_gray.jpg"
-#lined_file = "/Users/flg8r96/love_gray_lines.jpg"
+file = "/Users/flg8r96/love.jpg"
+new_file = "/Users/flg8r96/love_gray.jpg"
+lined_file = "/Users/flg8r96/love_gray_lines.jpg"
+pxl_file = "/Users/flg8r96/love_gray_pixel.jpg"
 
 #file = "/Users/flg8r96/bar.jpg"
 #new_file = "/Users/flg8r96/bar_gray.jpg"
 #lined_file = "/Users/flg8r96/bar_gray_lines.jpg"
 
-file = "/Users/mperkins/awarepoint_logo.jpg"
-new_file = "/Users/mperkins/awarepoint_logo_gray.jpg"
-lined_file = "/Users/mperkins/awarepoint_logo_gray_lines.jpg"
-pxl_file = "/Users/mperkins/awarepoint_logo_pixelated.jpg"
+#file = "/Users/mperkins/awarepoint_logo.jpg"
+#new_file = "/Users/mperkins/awarepoint_logo_gray.jpg"
+#lined_file = "/Users/mperkins/awarepoint_logo_gray_lines.jpg"
+#pxl_file = "/Users/mperkins/awarepoint_logo_pixelated.jpg"
 
 #file = "/Users/mperkins/checker_large.gif"
 #new_file = "/Users/mperkins/checker_large_gray.gif"
@@ -43,8 +44,8 @@ gwidth, gheight = grayscale.size
 print "Grayscale size: " + str(gwidth) +"x" +str(gheight)
 
 
-row_deviations = 10
-col_deviations = 10
+row_deviations = 20
+col_deviations = 20
 
 col_cnt = 0
 row_cnt = 0
@@ -115,9 +116,14 @@ norm_sumlight = numpy.divide(sumlight,pixels_per_square)
 
 norm_sumlight = numpy.around(norm_sumlight, decimals=0)
 print norm_sumlight
+print norm_sumlight[9][9]
+print norm_sumlight[6][6]
+print type(norm_sumlight[6][6])
 
 raw_input("enter")
 
+col_cnt=0
+row_cnt=0
 print "Starting to create the pixelated file"
 pixelated = Image.new("L",(gwidth,gheight), color=None)
 # write this out to a pixelated file of equal size as the original
@@ -128,13 +134,14 @@ for row in xrange(0, gheight):
         # get current color value and add it to the sumlight for the grid that this pixel is in
 #try:
     #if norm_sumlight[row_cnt][col_cnt] != 0:
-        print col_cnt, row_cnt
+        print col_cnt, row_cnt, norm_sumlight[row_cnt][col_cnt]
         val1 = (norm_sumlight[row_cnt][col_cnt])
-        val2 = val1*255/101
+
+        val2 = val1*255/180
         val = int(val2)
         print val1, val2, val
-        if val > 128:
-            raw_input("ENTER")
+        #if val1 > 103:
+            #raw_input("ENTER")
         #print val
         pixelated.putpixel((col, row), val)   # black pixel
         print "pixel for col/row: "  +str(col) +"/" +str(row) +"-" +str(val1) +str("..") +str(val)  +" col_cnt/row_cnt:"  +str(col_cnt) +"/" +str(row_cnt)
@@ -148,10 +155,10 @@ for row in xrange(0, gheight):
         #    row_cnt += 1
 
         # draw horizontal line on the image to see where the larger pixels are located
-        """if row%(gheight/row_deviations) == 0:
+        if row%(gheight/row_deviations) == 0:
             if col == 0 and row != 0:
                 row_cnt += 1
-"""
+
         if col%(gwidth/col_deviations) == 0:
             if col != 0:
                 col_cnt += 1
