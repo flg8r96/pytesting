@@ -98,13 +98,6 @@ class Controller:
         self.model.entryEvent()
 
 def main():
-    # do stuff
-
-    # creating manual state changes
-    #a = exithouse.ExitHouse(initdict)
-    #initdict["dooropen_flag"] = True
-    #ruleoutcome = a.evaluateRule(**initdict)
-    #print "Main: outcome of ExitHouse:EvaluateRule: " + str(ruleoutcome)
 
     # creating windows that help create automatic state changes
     app = wx.App()
