@@ -6,9 +6,9 @@ def main():
     # check the director for files
     # go one at a time until all files have been pixelated
     dir = "/Users/flg8r96/development/pytesting/flamevideos/"
-    filenameroot = "flame2_10_"
+    filenameroot = "flame3_10_"
     start_index = 1
-    end_index = 205
+    end_index = 279
     file_ext = ".jpg"
     for index in range(start_index,end_index):
         file = dir + filenameroot +str("%04d" % index) + file_ext

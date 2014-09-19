@@ -24,22 +24,89 @@ class Pixelate:
         im = Image.open(self.file)
         width, height = im.size
 
-        grayscale = im.convert("L")     #grayscale
-        #grayscale = im.convert("1")     #black and white
-        print grayscale
-        #msg = grayscale.save("/Users/flg8r96/love_gray.jpg")
-        msg = grayscale.save(self.new_file)
+        gray = im.convert("L")     #grayscale
+        #gray = im.convert("1")     #black and white
+        print gray
+        msg = gray.save(self.new_file)
         print "Error in writing file: " +str(msg)
-        gwidth, gheight = grayscale.size
-        print "Grayscale size: " + str(gwidth) +"x" +str(gheight)
+        gwidth, gheight = gray.size
+        print "gray size: " + str(gwidth) +"x" +str(gheight)
+
+        new_width = 0
+        new_height = 0
+        # if the image size isn't divisible by 16 and 32 on width and height we need to crop the image
+        if height%32 == 0:
+            row_deviations = 32
+        else:
+            for max_hpixel in range(height, height - 32,-1):
+                #print "maxhpixel: " +str(max_hpixel)
+                if max_hpixel%32 == 0:
+                    row_deviations = 32
+                    new_height = max_hpixel
+
+        if width%16 == 0:
+            col_deviations = 16
+            print "asdflj"
+        else:
+            # figure out how to cut the pixels
+            for max_wpixel in range(width, width - 16,-1):
+                #print "maxwpixwl: " +str(max_wpixel)
+                if max_wpixel%16 == 0:
+                    col_deviations = 16
+                    print "ysasdf"
+                    new_width = max_wpixel
+
+        #adjust the image
+        if new_height:
+            hpixel_diff = height - new_height
+            print hpixel_diff
+            if hpixel_diff%2 != 0:
+                hrange = range(hpixel_diff/2,height - hpixel_diff/2)
+            else:
+                hrange = range(hpixel_diff/2,height - hpixel_diff/2 + 1)
+        if new_width:
+            wpixel_diff = width - new_width
+            if wpixel_diff%2 != 0:
+                wrange = range(wpixel_diff/2,width - wpixel_diff/2)
+            else:
+                wrange = range(wpixel_diff/2,width - wpixel_diff/2 + 1)
+
+        #print hrange
+        if new_width and new_height:
+            grayscale = Image.new("L",(new_width,new_height), color=None)
+            for a in range(hrange[:]):
+                for b in range(wrange[:]):
+                    grssi = gray.getpixel((b, a))
+                    grayscale.putpixel((b, a), grssi)
+        elif new_width and not new_height:
+            grayscale = Image.new("L",(new_width,height), color=None)
+            for a in range(height):
+                for b in range(wrange[:]):
+                    grssi = gray.getpixel((b, a))
+                    grayscale.putpixel((b, a), grssi)
+        elif not new_width and new_height:
+            grayscale = Image.new("L",(width,new_height), color=None)
+            print grayscale.size
+            print hrange
+            n = hrange[hrange.__len__()-1]-1
+            q = hrange[0]+1
+            print q, n
+            for a in range(q,n):
+                for b in range(width):
+                    grssi = gray.getpixel((b, a))
+                    #print a, b
+                    grayscale.putpixel((b, a-hrange[0]), grssi)
 
 
-        row_deviations = 71
-        col_deviations = 16
+
 
         col_cnt = 0
         row_cnt = 0
-
+        gwidth, gheight = grayscale.size
+        print gwidth, gheight
+        print col_deviations, row_deviations
+        #row_deviations = 4
+        #col_deviations = 4
         # create an array of summed pixel values
         # initialize the array - HOW THIS ARRAY IS CREATED IS IMPORTANT
         # IF YOU DON'T CREATE THE ARRAY AS SHOWN BELOW, THE ELEMENTS CAN'T BE ACCESSED BY ROW/COL
@@ -151,10 +218,10 @@ class Pixelate:
         return msg
 
 def main():
-    file = "/Users/flg8r96/development/pytesting/flamevideos/flame2_10_0001.jpg"
-    new_file = "/Users/flg8r96/development/pytesting/flamevideos/flame2_10_0001_gray.jpg"
-    lined_file = "/Users/flg8r96/development/pytesting/flamevideos/flame2_0001_10_gray_lines.jpg"
-    pxl_file = "/Users/flg8r96/development/pytesting/flamevideos/flame2_0001_10_gray_pixel.jpg"
+    file = "/Users/flg8r96/development/pytesting/flamevideos/flame3_10_0001.jpg"
+    new_file = "/Users/flg8r96/development/pytesting/flamevideos/flame3_10_0001_gray.jpg"
+    lined_file = "/Users/flg8r96/development/pytesting/flamevideos/flame3_0001_10_gray_lines.jpg"
+    pxl_file = "/Users/flg8r96/development/pytesting/flamevideos/flame3_0001_10_gray_pixel.jpg"
 
     t = Pixelate(file=file,
                 new_file=new_file,
